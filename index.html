@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Títulos de Dívida com Oferta Pública</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Tahoma, Segoe UI, Arial, sans-serif; font-size: 11px; color: #000; background: #fff; width: 896px; }
+  .tabtitle { background: #f0f0f0; border-bottom: 1px solid #c8c8c8; height: 26px; }
+  .tabtitle span { display: inline-block; background: #3c3c64; color: #fff; font-weight: bold; padding: 6px 8px; height: 26px; }
+  .toolbar { display: flex; align-items: center; height: 27px; background: #f0f0f0; border-bottom: 1px solid #c8c8c8; }
+  .toolbar .cap { background: #3c3c64; color: #fff; font-weight: bold; padding: 0 6px; height: 27px; line-height: 27px; margin-right: 4px; }
+  .btn { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid transparent; }
+  .btn:hover { border-color: #7aa7d8; background: #dbe8f6; }
+  .btn.dis { opacity: .35; pointer-events: none; }
+  .tbtext { height: 22px; padding: 0 6px; display: inline-flex; align-items: center; cursor: pointer; border: 1px solid transparent; }
+  .tbtext:hover { border-color: #7aa7d8; background: #dbe8f6; }
+  .sep { width: 1px; height: 18px; background: #b0b0b0; margin: 0 4px; }
+  .grid { height: 333px; border-bottom: 1px solid #c8c8c8; overflow: auto; }
+  table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+  th { text-align: left; font-weight: bold; border-right: 1px solid #c0c0c0; border-bottom: 1px solid #c0c0c0; padding: 0 2px; height: 15px; background: #fff; }
+  td { padding: 0 2px; height: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default; }
+  td.r, th.r { text-align: right; }
+  tr.rsel td { background: #99b4d1; }
+  tr.rsel td:first-child { background: #fff; outline: 1px solid #000; outline-offset: -1px; font-weight: bold; }
+  .splitter { height: 20px; background: #f0f0f0; position: relative; border-bottom: 1px solid #c8c8c8; }
+  .splitter::after { content: ""; position: absolute; left: 18px; top: 8px; width: 38px; height: 2px; background: #808080; }
+  .tabs { display: flex; border-bottom: 1px solid #a0a0a0; padding: 2px 0 0 2px; height: 22px; background: #fff; }
+  .tab { padding: 2px 5px; border: 1px solid #a0a0a0; border-bottom: none; background: #fff; font-size: 12px; font-weight: bold; position: relative; top: 1px; }
+  .form { position: relative; height: 300px; }
+  .f { position: absolute; display: flex; align-items: center; }
+  .lbl { text-align: left; padding: 0 4px 0 10px; white-space: nowrap; }
+  .lnk { color: #0645ad; text-decoration: underline; cursor: pointer; }
+  input[type=text], select { height: 20px; border: 1px solid #a0a0a0; font: inherit; font-size: 11px; padding: 0 2px; background: #fff; }
+  input:disabled, select:disabled { background: #fff; color: #000; }
+  #descricao:disabled { background: #f0f0f0; }
+  .num { text-align: right; }
+  .tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; margin-left: 5px; border-radius: 50%; background: #2a6fd6; color: #fff; font: bold 10px Georgia, serif; font-style: italic; cursor: help; }
+  .tip .tiptext { display: none; position: absolute; left: 0; top: 18px; width: 300px; padding: 6px 8px; background: #ffffe1; color: #000; border: 1px solid #767676; box-shadow: 2px 2px 4px rgba(0,0,0,.25); font: normal 11px Tahoma, Arial, sans-serif; z-index: 20; }
+  .tip:hover .tiptext, .tip:focus .tiptext { display: block; }
+  .err { border-color: #d32f2f !important; background: #ffebee !important; }
+</style>
+</head>
+<body>
+<div class="tabtitle"><span>Títulos de Dívida com Oferta Pública</span></div>
+
+<!-- Visual Function 1: Lista -->
+<div class="toolbar">
+  <div class="cap">Títulos de Dívida com Oferta Pública</div>
+  <span class="btn" title="Excluir" onclick="excluir()"><svg width="16" height="16"><path d="M3 4h10M6 4V2h4v2M4 4l1 10h6l1-10M7 6v6M9 6v6" stroke="#444" fill="none"/></svg></span>
+  <span class="sep"></span>
+  <span class="btn" title="Primeiro" onclick="nav('p')"><svg width="16" height="16"><path d="M4 3v10M13 3L6 8l7 5z" fill="#1c2a8c" stroke="#1c2a8c"/></svg></span>
+  <span class="btn" title="Anterior" onclick="nav('a')"><svg width="16" height="16"><path d="M8 3L2 8l6 5zM14 3L8 8l6 5z" fill="#1c2a8c"/></svg></span>
+  <span class="btn" title="Próximo" onclick="nav('n')"><svg width="16" height="16"><path d="M2 3l6 5-6 5zM8 3l6 5-6 5z" fill="#1c2a8c"/></svg></span>
+  <span class="btn" title="Último" onclick="nav('u')"><svg width="16" height="16"><path d="M12 3v10M3 3l7 5-7 5z" fill="#1c2a8c" stroke="#1c2a8c"/></svg></span>
+  <span class="btn" title="Novo" onclick="novo()"><svg width="16" height="16"><path d="M3 2h7l3 3v9H3zM10 2v3h3" fill="#fff" stroke="#444"/><path d="M11 10v5M8.5 12.5h5" stroke="#2a6fd6" stroke-width="1.5"/></svg></span>
+  <span class="btn" title="Relatório" onclick="relatorio()"><svg width="16" height="16"><path d="M3 2h10v12H3zM5 5h6M5 8h6M5 11h4" fill="#fff" stroke="#444"/></svg></span>
+  <span class="btn" title="Localizar" onclick="localizar()"><svg width="16" height="16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="#444" stroke-width="1.5"/><path d="M10 10l4 4" stroke="#444" stroke-width="2"/></svg></span>
+  <span class="sep"></span>
+  <span class="btn" title="Atualizar" onclick="render()"><svg width="16" height="16"><path d="M13 8a5 5 0 1 1-1.5-3.5M12 1v4H8" fill="none" stroke="#2a6fd6" stroke-width="1.5"/></svg></span>
+  <span class="sep"></span>
+  <span class="tbtext" title="Calcular DeRE" onclick="calcularDeRE()">Calcular DeRE</span>
+</div>
+
+<div class="grid">
+  <table>
+    <colgroup><col style="width:75px"><col style="width:90px"><col style="width:120px"><col style="width:95px"><col style="width:115px"><col style="width:95px"><col style="width:110px"><col style="width:100px"><col></colgroup>
+    <thead><tr><th>Código</th><th>Filial</th><th>Código ISO 6166 (ISIN)</th><th>Descrição do Fundo</th><th>CNPJ do Emitente</th><th>Razão Social do Emitente</th><th>Data Saldo Inicial DeRE</th><th class="r">Valor Saldo Inicial</th><th>Conta Contábil</th></tr></thead>
+    <tbody id="gridBody"></tbody>
+  </table>
+</div>
+
+<div class="splitter"></div>
+
+<!-- Visual Function 2: Pasta -->
+<div class="toolbar">
+  <div class="cap">Título de Dívida com Oferta Pública</div>
+  <span class="btn" id="bNovo" title="Incluir" onclick="novo()"><svg width="16" height="16"><path d="M3 2h7l3 3v9H3zM10 2v3h3" fill="#fff" stroke="#444"/><path d="M11 10v5M8.5 12.5h5" stroke="#2a6fd6" stroke-width="1.5"/></svg></span>
+  <span class="btn dis" id="bSalvar" title="Salvar" onclick="salvar()"><svg width="16" height="16"><path d="M2 2h10l2 2v10H2zM5 2v4h6V2M5 14V9h6v5" fill="#fff" stroke="#444"/></svg></span>
+  <span class="btn dis" id="bCancelar" title="Cancelar" onclick="cancelar()"><svg width="16" height="16"><path d="M2 2h10l2 2v10H2zM5 2v4h6V2" fill="#fff" stroke="#444"/><path d="M9 9l5 5M14 9l-5 5" stroke="#c00" stroke-width="1.5"/></svg></span>
+  <span class="btn" title="Excluir" onclick="excluir()"><svg width="16" height="16"><path d="M3 4h10M6 4V2h4v2M4 4l1 10h6l1-10M7 6v6M9 6v6" stroke="#444" fill="none"/></svg></span>
+  <span class="sep"></span>
+  <span class="btn" title="Primeiro" onclick="nav('p')"><svg width="16" height="16"><path d="M4 3v10M13 3L6 8l7 5z" fill="#1c2a8c" stroke="#1c2a8c"/></svg></span>
+  <span class="btn" title="Anterior" onclick="nav('a')"><svg width="16" height="16"><path d="M8 3L2 8l6 5zM14 3L8 8l6 5z" fill="#1c2a8c"/></svg></span>
+  <span class="btn" title="Próximo" onclick="nav('n')"><svg width="16" height="16"><path d="M2 3l6 5-6 5zM8 3l6 5-6 5z" fill="#1c2a8c"/></svg></span>
+  <span class="btn" title="Último" onclick="nav('u')"><svg width="16" height="16"><path d="M12 3v10M3 3l7 5-7 5z" fill="#1c2a8c" stroke="#1c2a8c"/></svg></span>
+</div>
+
+<div class="tabs"><div class="tab">Identificação</div></div>
+
+<div class="form">
+  <div id="lookup" style="display:none;position:absolute;left:174px;top:128px;width:420px;background:#fff;border:1px solid #808080;box-shadow:2px 2px 6px rgba(0,0,0,.3);z-index:10">
+    <div style="background:#3c3c64;color:#fff;font-weight:bold;padding:3px 6px;display:flex;justify-content:space-between">Contas Contábeis<span style="cursor:pointer" onclick="fechaLookup()">✕</span></div>
+    <div style="padding:4px"><input type="text" id="lkFiltro" placeholder="Localizar..." style="width:100%" oninput="montaLookup()"></div>
+    <div style="height:150px;overflow:auto"><table><colgroup><col style="width:100px"><col></colgroup>
+      <thead><tr><th>Código</th><th>Descrição</th></tr></thead><tbody id="lkBody"></tbody></table></div>
+  </div>
+  <!-- Linha 1 -->
+  <div class="f" style="left:0;top:10px"><span class="lbl" style="width:170px">Código</span><input type="text" id="codSeq" style="width:110px" maxlength="9"></div>
+
+  <!-- Linhas 2 a 5: duas colunas -->
+  <div class="f" style="left:0;top:34px"><span class="lbl" style="width:170px">Filial</span>
+    <select id="filial" style="width:200px">
+      <option value=""></option>
+      <option>0001 - Matriz</option>
+      <option>0002 - Filial São Paulo</option>
+      <option>0003 - Filial Curitiba</option>
+    </select>
+  </div>
+  <div class="f" style="left:400px;top:34px"><span class="lbl" style="width:170px">Código ISO 6166 (ISIN)</span><input type="text" id="codigo" style="width:110px" maxlength="12"><span class="tip" tabindex="0">i<span class="tiptext" style="left:auto;right:0">Código de identificação global do título no padrão ISO 6166 (ISIN).<br><br>Deve ser informado sem espaços ou caracteres especiais, contendo exatamente 12 caracteres alfanuméricos.</span></span></div>
+
+  <div class="f" style="left:0;top:58px"><span class="lbl" style="width:170px">CNPJ do Emitente dos Títulos</span><input type="text" id="cnpjEmitente" style="width:200px" maxlength="18"></div>
+  <div class="f" style="left:400px;top:58px"><span class="lbl" style="width:170px">Razão Social do Emitente</span><input type="text" id="nomeEmitente" style="width:300px"></div>
+
+  <div class="f" style="left:0;top:82px"><span class="lbl" style="width:170px">Data Saldo Inicial DeRE</span><input type="date" id="dataSaldo" min="2026-10-01" style="width:200px;height:20px;border:1px solid #a0a0a0;font:inherit;font-size:11px"><span class="tip" tabindex="0">i<span class="tiptext">Data de início de envio da informação do Título de Dívida. Não pode ser anterior a 01/10/2026. Caso seja mantido em branco, será preenchido com a data 01/10/2026 para fins da DeRE.</span></span></div>
+  <div class="f" style="left:400px;top:82px"><span class="lbl" style="width:170px">Valor Saldo Inicial</span><input type="text" id="valor" class="num" style="width:200px"></div>
+
+  <div class="f" style="left:0;top:106px"><span class="lbl lnk" style="width:170px" onclick="abreLookup()">Conta Contábil</span>
+    <select id="conta" style="width:200px">
+      <option value=""></option>
+      <option>1.1.3.01.001 - Debêntures de Oferta Pública</option>
+      <option>1.1.3.01.002 - Notas Comerciais de Oferta Pública</option>
+      <option>1.1.3.01.003 - Certificados de Recebíveis (CRI/CRA) de Oferta Pública</option>
+      <option>1.1.3.02.001 - Títulos de Dívida de Oferta Pública - Fundo Exclusivo</option>
+      <option>1.1.3.02.002 - Debêntures de Oferta Pública - Fundo Exclusivo</option>
+    </select>
+    <span class="tip" tabindex="0">i<span class="tiptext">Conforme determinado pelo manual da DeRE, apenas as contas contábeis vinculadas aos codtrib abaixo devem ser utilizadas no evento D - 2101:<br><br>[110113001]: Títulos de dívida objeto de oferta pública;<br>[110113002]: Títulos de dívida objeto de oferta pública - Fundo de investimento exclusivo.</span></span>
+  </div>
+  <div class="f" style="left:400px;top:106px"><span class="lbl" style="width:170px">Descrição do Fundo</span><input type="text" id="descricao" style="width:300px" disabled></div>
+  <div class="f" style="left:400px;top:130px"><span class="lbl" style="width:170px"></span><label style="display:flex;align-items:center;cursor:pointer"><input type="checkbox" id="adquiridoFundo" style="margin:0 4px 0 0">Título Adquirido por Fundo de Investimento</label><span class="tip" tabindex="0">i<span class="tiptext" style="left:auto;right:0">Essa informação é obrigatória se a aquisição se der por meio de fundos de investimento com composição mínima de 95% de títulos de dívida.</span></span></div>
+</div>
+
+<script>
+  var DATA_PADRAO_DERE = '2026-10-01';
+  var campos = ['codSeq', 'codigo', 'descricao', 'filial','cnpjEmitente', 'nomeEmitente', 'valor', 'dataSaldo', 'conta'];
+  var dados = [{ codSeq: '000000001', codigo: 'BRABCDDBS001', descricao: 'Debênture Empresa Teste', adquiridoFundo: true, filial: '0001 - Matriz', cnpjEmitente: '12.345.678/0001-95', nomeEmitente: 'Empresa Teste S.A.', valor: '10.000,00', dataSaldo: '2026-10-01', conta: '1.1.3.01.001 - Debêntures de Oferta Pública' }];
+  var atual = 0, editando = false;
+
+  function $(id) { return document.getElementById(id); }
+  function fmtData(s) { if (!s) return ''; var p = s.split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : s; }
+
+  function render() {
+    var tb = $('gridBody'); tb.innerHTML = '';
+    dados.forEach(function (d, i) {
+      var tr = document.createElement('tr');
+      if (i === atual) tr.className = 'rsel';
+      ['codSeq', 'filial', 'codigo','descricao', 'cnpjEmitente', 'nomeEmitente', 'dataSaldo', 'valor', 'conta'].forEach(function (k) {
+        var td = document.createElement('td'); td.textContent = k === 'dataSaldo' ? fmtData(d[k]) : d[k];
+        if (k === 'valor') td.className = 'r';
+        tr.appendChild(td);
+      });
+      tr.onclick = function () { if (!editando) { atual = i; render(); } };
+      tb.appendChild(tr);
+    });
+    carregaTela();
+  }
+
+  function carregaTela() {
+    var d = dados[atual] || {};
+    campos.forEach(function (c) { $(c).value = d[c] || ''; $(c).classList.remove('err'); });
+    $('adquiridoFundo').checked = !!d.adquiridoFundo;
+    atualizaDescricao();
+  }
+
+  function modoEdicao(on) {
+    editando = on;
+    $('bSalvar').classList.toggle('dis', !on);
+    $('bCancelar').classList.toggle('dis', !on);
+    $('bNovo').classList.toggle('dis', on);
+  }
+
+  function proximoCodSeq() {
+    var max = dados.reduce(function (m, d) { return Math.max(m, parseInt(d.codSeq, 10) || 0); }, 0);
+    return String(max + 1).padStart(9, '0');
+  }
+
+  function novo() {
+    atual = -1; render();
+    modoEdicao(true);
+    $('codSeq').value = proximoCodSeq();
+    $('dataSaldo').value = DATA_PADRAO_DERE;
+    $('filial').focus();
+  }
+
+  function salvar() {
+    var ok = true, reg = {};
+    if (!$('dataSaldo').value) $('dataSaldo').value = DATA_PADRAO_DERE;
+    if ($('dataSaldo').value < DATA_PADRAO_DERE) { $('dataSaldo').classList.add('err'); alert('A Data Saldo Inicial DeRE não pode ser anterior a 01/10/2026.'); return; }
+    campos.forEach(function (c) {
+      reg[c] = $(c).value.trim();
+      var obrig = c !== 'dataSaldo' && (c !== 'descricao' || $('adquiridoFundo').checked);
+      $(c).classList.toggle('err', !reg[c] && obrig);
+      if (!reg[c] && obrig) ok = false;
+    });
+    if (!ok) { alert('Preencha os campos obrigatórios.'); return; }
+    reg.adquiridoFundo = $('adquiridoFundo').checked;
+    if (!reg.adquiridoFundo) reg.descricao = '';
+    reg.codSeq = reg.codSeq.padStart(9, '0');
+    if (!/^\d{9}$/.test(reg.codSeq) || +reg.codSeq === 0) { $('codSeq').classList.add('err'); alert('O Código deve conter até 9 dígitos numéricos e ser maior que zero.'); return; }
+    if (dados.some(function (d, i) { return i !== atual && d.codSeq === reg.codSeq; })) { $('codSeq').classList.add('err'); alert('Já existe um título cadastrado com este Código.'); return; }
+    reg.codigo = reg.codigo.toUpperCase();
+    if (!/^[A-Z0-9]{12}$/.test(reg.codigo)) { $('codigo').classList.add('err'); alert('O Código (ISIN) deve conter exatamente 12 caracteres alfanuméricos, sem espaços ou caracteres especiais.'); return; }
+    if (!cnpjValido(reg.cnpjEmitente)) { $('cnpjEmitente').classList.add('err'); alert('CNPJ do Emitente dos Títulos inválido.'); return; }
+    if (dados.some(function (d, i) { return i !== atual && d.codigo === reg.codigo; })) { $('codigo').classList.add('err'); alert('Já existe um título cadastrado com este Código (ISIN).'); return; }
+    var v = parseFloat(reg.valor.replace(/\./g, '').replace(',', '.'));
+    if (isNaN(v)) { $('valor').classList.add('err'); alert('Valor Saldo Inicial inválido.'); return; }
+    reg.valor = v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (atual === -1) { dados.push(reg); atual = dados.length - 1; } else { dados[atual] = reg; }
+    modoEdicao(false); render();
+  }
+
+  function cancelar() {
+    if (atual === -1) atual = dados.length ? 0 : -1;
+    modoEdicao(false); render();
+  }
+
+  function excluir() {
+    if (editando || atual < 0 || !dados.length) return;
+    if (!confirm('Deseja excluir esta aplicação?')) return;
+    dados.splice(atual, 1);
+    atual = dados.length ? Math.min(atual, dados.length - 1) : -1;
+    render();
+  }
+
+  function nav(t) {
+    if (editando || !dados.length) return;
+    if (t === 'p') atual = 0;
+    if (t === 'u') atual = dados.length - 1;
+    if (t === 'a') atual = Math.max(0, atual - 1);
+    if (t === 'n') atual = Math.min(dados.length - 1, atual + 1);
+    render();
+  }
+
+  // Duplo clique no campo habilita alteração do registro selecionado
+  document.querySelector('.form').addEventListener('dblclick', function () {
+    if (!editando && atual >= 0) modoEdicao(true);
+  });
+
+  // Conta Contábil: escolher uma conta fora da edição entra em modo de alteração
+  $('conta').addEventListener('change', entraEdicaoSelect);
+  $('filial').addEventListener('change', entraEdicaoSelect);
+  $('adquiridoFundo').addEventListener('change', function () {
+    if (!editando) { var v = this.checked; if (atual < 0) { this.checked = !v; return; } modoEdicao(true); this.checked = v; }
+    if (!this.checked) $('descricao').value = '';
+    atualizaDescricao();
+  });
+
+  // Descrição do Fundo só é habilitada quando o título foi adquirido por fundo de investimento
+  function atualizaDescricao() { $('descricao').disabled = !$('adquiridoFundo').checked; }
+  function entraEdicaoSelect() {
+    if (!editando) { var v = this.value; if (atual < 0) return; modoEdicao(true); this.value = v; }
+  }
+
+  function contas() {
+    return Array.prototype.slice.call($('conta').options).filter(function (o) { return o.value; })
+      .map(function (o) { var p = o.value.split(' - '); return { cod: p[0], desc: p.slice(1).join(' - '), full: o.value }; });
+  }
+
+  function montaLookup() {
+    var f = $('lkFiltro').value.toLowerCase(), tb = $('lkBody'); tb.innerHTML = '';
+    contas().filter(function (c) { return !f || c.full.toLowerCase().indexOf(f) >= 0; }).forEach(function (c) {
+      var tr = document.createElement('tr');
+      if (c.full === $('conta').value) tr.className = 'rsel';
+      tr.innerHTML = '<td></td><td></td>';
+      tr.cells[0].textContent = c.cod; tr.cells[1].textContent = c.desc;
+      tr.ondblclick = function () {
+        if (!editando && atual >= 0) modoEdicao(true);
+        if (editando) $('conta').value = c.full;
+        fechaLookup();
+      };
+      tb.appendChild(tr);
+    });
+  }
+
+  function abreLookup() { $('lkFiltro').value = ''; montaLookup(); $('lookup').style.display = 'block'; $('lkFiltro').focus(); }
+  function fechaLookup() { $('lookup').style.display = 'none'; }
+
+  // Digitar em qualquer campo entra em modo de alteração (habilita Salvar/Cancelar)
+  // Código (ISIN): aceita só letras e números, sempre em maiúsculas
+  $('codigo').addEventListener('input', function () { this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); });
+
+  // CNPJ do Emitente: máscara 00.000.000/0000-00
+  $('cnpjEmitente').addEventListener('input', function () {
+    var n = this.value.replace(/\D/g, '').slice(0, 14);
+    this.value = n.replace(/^(\d{2})(\d)/, '$1.$2').replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2').replace(/(\d{4})(\d)/, '$1-$2');
+  });
+
+  function cnpjValido(s) {
+    var n = s.replace(/\D/g, '');
+    if (n.length !== 14 || /^(\d)\1+$/.test(n)) return false;
+    function dv(len) {
+      var soma = 0, peso = len - 7;
+      for (var i = 0; i < len; i++) { soma += n.charAt(i) * peso--; if (peso < 2) peso = 9; }
+      var r = soma % 11;
+      return r < 2 ? 0 : 11 - r;
+    }
+    return dv(12) === +n.charAt(12) && dv(13) === +n.charAt(13);
+  }
+
+  // Código: apenas dígitos
+  $('codSeq').addEventListener('input', function () { this.value = this.value.replace(/\D/g, ''); });
+
+  ['codSeq', 'codigo', 'descricao', 'cnpjEmitente', 'nomeEmitente', 'valor', 'dataSaldo'].forEach(function (c) {
+    $(c).addEventListener('input', function () { if (!editando && atual >= 0) modoEdicao(true); });
+  });
+
+  function localizar() {
+    if (editando || !dados.length) return;
+    var t = prompt('Localizar (código, descrição ou conta):');
+    if (!t) return;
+    t = t.toLowerCase();
+    var ini = atual + 1;
+    for (var k = 0; k < dados.length; k++) {
+      var i = (ini + k) % dados.length, d = dados[i];
+      if ((d.codigo + ' ' + d.descricao + ' ' + d.conta).toLowerCase().indexOf(t) >= 0) { atual = i; render(); return; }
+    }
+    alert('Nenhum registro encontrado.');
+  }
+
+  function relatorio() {
+    var esc = function (s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); };
+    var linhas = dados.map(function (d) {
+      return '<tr><td>' + esc(d.codSeq) + '</td><td>' + esc(d.filial) + '</td><td>' + esc(d.codigo) + '</td><td>' + esc(d.descricao) + '</td><td>' + esc(d.cnpjEmitente) + '</td><td>' + esc(d.nomeEmitente) + '</td><td>' + esc(fmtData(d.dataSaldo)) + '</td><td style="text-align:right">' + esc(d.valor) + '</td><td>' + esc(d.conta) + '</td></tr>';
+    }).join('');
+    var w = window.open('', '_blank');
+    if (!w) { alert('Permita pop-ups para gerar o relatório.'); return; }
+    w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Relatório - Aplicações Financeiras</title>' +
+      '<style>body{font-family:Tahoma,Arial;font-size:11px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #999;padding:3px}th{background:#eee;text-align:left}</style></head><body>' +
+      '<h3>Aplicações Financeiras</h3><p>Emitido em ' + new Date().toLocaleString('pt-BR') + '</p>' +
+      '<table><tr><th>Código</th><th>Filial</th><th>Código ISO 6166 (ISIN)</th><th>Descrição do Fundo</th><th>CNPJ do Emitente</th><th>Razão Social do Emitente</th><th>Data Saldo Inicial DeRE</th><th>Valor Saldo Inicial</th><th>Conta Contábil</th></tr>' + linhas + '</table>' +
+      '<script>window.print()<\/script></body></html>');
+    w.document.close();
+  }
+
+  function calcularDeRE() {
+    window.open('https://ricardopaivak.github.io/dere_eventos_mensais/', '_blank');
+  }
+
+  render();
+</script>
+</body>
+</html>
